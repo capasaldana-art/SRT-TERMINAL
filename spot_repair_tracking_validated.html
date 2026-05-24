@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#06162f">
+<title>Spot Repair Tracking</title>
+<style>
+:root{
+  --navy:#06162f;--blue:#1238d5;--orange:#ff5b00;--green:#07964d;
+  --bg:#f5f7fb;--text:#06112b;--muted:#5f6778;--line:#e2e6ee;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;min-height:100%;font-family:Arial,system-ui,sans-serif;background:var(--bg);color:var(--text)}
+.app{max-width:480px;margin:0 auto;min-height:100vh;background:#fff}
+.header{height:105px;background:linear-gradient(135deg,#020b1b,#071c3b);color:white;display:flex;align-items:center;padding:0 28px}
+.brand{font-size:32px;font-weight:900;letter-spacing:-1px;white-space:nowrap}
+.brand .cap{color:var(--orange);font-size:42px}
+.screen{display:none;min-height:calc(100vh - 105px);padding:26px 26px 0;background:white}
+.screen.active{display:block}
+.step{text-align:center;color:var(--blue);font-weight:900;font-size:17px;margin:4px 0 22px}
+.dots{display:flex;align-items:center;justify-content:space-between;margin:0 auto 54px;max-width:330px}
+.dot{width:34px;height:34px;border-radius:50%;background:#d9dce3;color:#101828;display:flex;align-items:center;justify-content:center;font-weight:900}
+.dot.on{background:var(--blue);color:white}.bar{height:3px;background:#d0d4dc;flex:1;margin:0 14px}.bar.on{background:var(--blue)}
+.hero{text-align:center;margin:0 auto 26px}.iconBig{font-size:96px;color:var(--blue);line-height:1}.iconOrange{color:var(--orange)}.iconGreen{color:var(--green)}
+.plateBox{position:relative;margin:0 auto 24px;width:260px;height:105px;border:3px solid var(--blue);border-radius:14px;display:flex;align-items:center;justify-content:center;color:var(--blue);font-size:38px;font-weight:900;background:white}
+.cameraBubble{position:absolute;right:-26px;top:-26px;width:58px;height:58px;border-radius:50%;background:var(--blue);display:flex;align-items:center;justify-content:center;color:white;font-size:28px}
+h1{font-size:27px;line-height:1.12;text-align:center;margin:0 0 14px;font-weight:900}
+p{font-size:17px;text-align:center;line-height:1.45;color:#202940;margin:0 0 24px}
+.input{width:100%;height:74px;border:1px solid #d9dde6;border-radius:14px;padding:0 20px;font-size:21px;color:#101828;background:white;outline:none;margin-bottom:20px}
+.input.center{text-align:center;font-weight:800;letter-spacing:.03em}.input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(18,56,213,.09)}
+.btn{width:100%;height:78px;border:0;border-radius:14px;font-size:20px;font-weight:900;color:white;background:var(--blue);cursor:pointer;margin-top:8px;box-shadow:0 12px 26px rgba(18,56,213,.22)}
+.btn.orange{background:linear-gradient(180deg,#ff6900,#f45100)}.btn.green{background:linear-gradient(180deg,#0ea65a,#078948)}.btn.light{background:white;color:var(--orange);border:2px solid var(--orange);box-shadow:none}.btn.disabled,.btn:disabled{opacity:.38;box-shadow:none}
+.addBox{border:2px dashed rgba(255,91,0,.45);border-radius:14px;background:#fff8f2;height:122px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--orange);font-weight:800;margin:20px 0 22px}.addBox .ico{font-size:34px;margin-bottom:8px}
+.counter{text-align:center;font-weight:900;font-size:16px;margin:14px 0;color:#101828}.thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:10px 0 12px}.thumbs img{width:100%;height:86px;object-fit:cover;border-radius:12px;border:1px solid #e4e7ee}
+.footerToast{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:min(480px,100%);min-height:104px;background:linear-gradient(135deg,#00142f,#06162f);color:white;display:none;align-items:center;padding:22px 34px;z-index:50;border-radius:8px 8px 0 0}
+.footerToast.show{display:flex}.check{width:56px;height:56px;border-radius:50%;background:#07a55d;display:flex;align-items:center;justify-content:center;margin-right:18px;font-size:32px;font-weight:900}.toastTitle{font-size:20px;font-weight:900;margin-bottom:4px}.toastSub{font-size:16px;color:#dce7ff}
+.overlay{position:fixed;inset:0;background:rgba(2,11,27,.97);display:none;align-items:center;justify-content:center;z-index:80;padding:18px;color:white}.overlay.show{display:flex}.camBox{width:min(480px,100%)}.topCam{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.camTitle{font-size:24px;font-weight:900}.close{border:0;background:rgba(255,255,255,.12);color:white;border-radius:12px;padding:12px 14px;font-weight:900}video{width:100%;border-radius:18px;background:black}.capture{margin-top:14px}
+.manualQr{display:grid;grid-template-columns:1fr 78px;gap:8px;margin-top:12px}.manualQr input{height:60px;border-radius:12px;border:0;padding:0 12px;font-size:17px}.manualQr button{border:0;border-radius:12px;background:var(--orange);color:white;font-weight:900}
+.final{position:fixed;inset:0;background:#08a854;display:none;align-items:center;justify-content:center;z-index:90;color:white;text-align:center;padding:20px;overflow:hidden}.final.show{display:flex}.finalCheck{width:96px;height:96px;background:white;color:#08a854;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:62px;font-weight:900;margin:0 auto 24px}.finalTitle{font-size:27px;font-weight:900;margin-bottom:12px}.finalBig{font-size:38px;font-weight:900}.confetti{position:absolute;width:9px;height:16px;border-radius:3px;top:-20px;animation:fall 1.4s linear forwards;z-index:1}@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.85}}
+.smallLink{display:block;text-align:center;color:var(--muted);font-weight:800;font-size:13px;margin-top:18px;text-decoration:underline;cursor:pointer}
+</style>
+</head>
+<body>
+<main class="app">
+<header class="header"><div class="brand"><span class="cap">S</span>pot <span class="cap">R</span>epair <span class="cap">T</span>racking</div></header>
+
+<section id="s1" class="screen active">
+<div class="step">ÉTAPE 1 / 4</div><div class="dots"><div class="dot on">1</div><div class="bar"></div><div class="dot">2</div><div class="bar"></div><div class="dot">3</div><div class="bar"></div><div class="dot">4</div></div>
+<div class="hero"><div class="plateBox"><span id="platePreview">AA-123-BB</span><div class="cameraBubble">📷</div></div><h1>Scanner la plaque</h1><p>Saisissez ou scannez<br>la plaque d'immatriculation.</p></div>
+<input id="plate" class="input center" placeholder="Ex : AA-123-BB" autocapitalize="characters">
+<button class="btn" id="plateBtn">▣ VALIDER LA PLAQUE</button>
+</section>
+
+<section id="s2" class="screen">
+<div class="step">ÉTAPE 2 / 4</div><div class="dots"><div class="dot on">1</div><div class="bar on"></div><div class="dot on">2</div><div class="bar"></div><div class="dot">3</div><div class="bar"></div><div class="dot">4</div></div>
+<div class="hero"><div class="iconBig iconOrange">📷</div><h1>Ajouter impact</h1><p>Prenez une photo de l'impact.<br>Vous pouvez en ajouter plusieurs.</p></div>
+<div class="addBox" id="addImpactBox"><div class="ico">🖼️</div><div>Ajouter une photo</div></div>
+<div class="counter" id="impactCount">Impacts ajoutés : 0</div><div class="thumbs" id="thumbs"></div>
+<button class="btn orange" id="photoBtn">📸 PRENDRE UNE PHOTO</button>
+<button class="btn light" id="moreBtn">＋ AJOUTER UN AUTRE IMPACT</button>
+<button class="btn orange disabled" id="impactNext" disabled>CONTINUER</button>
+</section>
+
+<section id="s3" class="screen">
+<div class="step">ÉTAPE 3 / 4</div><div class="dots"><div class="dot on">1</div><div class="bar on"></div><div class="dot on">2</div><div class="bar on"></div><div class="dot on">3</div><div class="bar"></div><div class="dot">4</div></div>
+<div class="hero"><div class="iconBig">♢</div><h1>Scanner balise</h1><p>Scannez la balise associée<br>au véhicule.</p></div>
+<input id="beacon" class="input" placeholder="Ex : BALISE_01">
+<button class="btn" id="beaconBtn">♢ VALIDER LA BALISE</button>
+</section>
+
+<section id="s4" class="screen">
+<div class="step">ÉTAPE 4 / 4</div><div class="dots"><div class="dot on">1</div><div class="bar on"></div><div class="dot on">2</div><div class="bar on"></div><div class="dot on">3</div><div class="bar on"></div><div class="dot on">4</div></div>
+<div class="hero"><div class="iconBig iconGreen">✈</div><h1>Envoyer</h1><p>Renseignez vos identifiants Telegram<br>puis envoyez le rapport.</p></div>
+<input id="token" class="input" placeholder="Token du bot Telegram">
+<input id="chatid" class="input" placeholder="Chat ID Telegram">
+<button class="btn green" id="sendBtn">✈ ENVOYER SUR TELEGRAM</button>
+<span class="smallLink" id="saveCfg">Sauvegarder les identifiants</span>
+</section>
+</main>
+
+<div id="toast" class="footerToast"><div class="check">✓</div><div><div class="toastTitle" id="toastTitle">PLAQUE VALIDÉE !</div><div class="toastSub">Étape suivante...</div></div></div>
+
+<div id="cameraOverlay" class="overlay"><div class="camBox">
+<div class="topCam"><div class="camTitle" id="camTitle">Caméra</div><button class="close" id="closeCam">Fermer</button></div>
+<video id="video" playsinline muted></video>
+<button class="btn orange capture" id="captureBtn">📸 CAPTURER</button>
+<div class="manualQr" id="manualQr" style="display:none"><input id="manualQrInput" placeholder="BALISE_01"><button id="manualQrBtn">OK</button></div>
+</div></div>
+
+<div id="final" class="final"><div><div class="finalCheck">✓</div><div class="finalTitle">VÉHICULE ASSOCIÉ !</div><div class="finalBig">SA FÈT !</div></div></div>
+
+<script>
+let photos=[],stream=null,mode="",qrLoop=null;const $=id=>document.getElementById(id);
+$("token").value=localStorage.getItem("srt_token")||"";$("chatid").value=localStorage.getItem("srt_chatid")||"";
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));$(id).classList.add("active")}
+function normalizePlate(v){let r=(v||"").toUpperCase().replace(/[^A-Z0-9]/g,"");if(r.length===7)return r.replace(/(.{2})(.{3})(.{2})/,"$1-$2-$3");return r}
+function clean(v){return (v||"").trim().toUpperCase().replace(/\s+/g,"_")}
+function now(){return new Date().toLocaleString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit"})}
+function vibrate(p=[45]){if(navigator.vibrate)navigator.vibrate(p)}
+function tone(type="mini"){try{let ctx=new (window.AudioContext||window.webkitAudioContext)(),n=ctx.currentTime;let arr=type==="final"?[{t:0,f:130,d:.08,g:.18},{t:.12,f:220,d:.06,g:.14},{t:.26,f:320,d:.05,g:.12},{t:.42,f:140,d:.12,g:.2}]:type==="beep"?[{t:0,f:880,d:.12,g:.13}]:[{t:0,f:170,d:.05,g:.13},{t:.09,f:240,d:.05,g:.1}];arr.forEach(h=>{let o=ctx.createOscillator(),g=ctx.createGain();o.type="triangle";o.frequency.setValueAtTime(h.f,n+h.t);g.gain.setValueAtTime(h.g,n+h.t);g.gain.exponentialRampToValueAtTime(.001,n+h.t+h.d);o.connect(g).connect(ctx.destination);o.start(n+h.t);o.stop(n+h.t+h.d)})}catch(e){}}
+function toast(text,type="mini",next=null){$("toastTitle").textContent=text;$("toast").classList.add("show");vibrate();tone(type);setTimeout(()=>{$("toast").classList.remove("show");if(next)show(next)},900)}
+async function openCam(m){mode=m;$("cameraOverlay").classList.add("show");$("camTitle").textContent=m==="impact"?"Photo impact":m==="qr"?"Scanner balise":"Scanner plaque";$("manualQr").style.display=m==="qr"?"grid":"none";$("captureBtn").style.display=m==="qr"?"none":"block";try{stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment",width:{ideal:960},height:{ideal:720}},audio:false});$("video").srcObject=stream;await $("video").play();if(m==="qr")startQr()}catch(e){alert("Caméra inaccessible. Vérifie le HTTPS.")}}
+function closeCam(){$("cameraOverlay").classList.remove("show");if(qrLoop)clearTimeout(qrLoop);qrLoop=null;if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}$("video").srcObject=null}
+async function snap(max=1100,q=.68){let v=$("video"),vw=v.videoWidth||960,vh=v.videoHeight||720,ratio=Math.min(1,max/Math.max(vw,vh)),w=Math.round(vw*ratio),h=Math.round(vh*ratio),c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d",{alpha:false}).drawImage(v,0,0,w,h);return await new Promise(res=>c.toBlob(res,"image/jpeg",q))}
+async function dataurl(b){return await new Promise(res=>{let r=new FileReader();r.onload=()=>res(r.result);r.readAsDataURL(b)})}
+async function capture(){if(mode==="impact"){let b=await snap(1100,.68);photos.push(b);let img=document.createElement("img");img.src=await dataurl(b);$("thumbs").appendChild(img);$("impactCount").textContent="Impacts ajoutés : "+photos.length;$("impactNext").disabled=false;$("impactNext").classList.remove("disabled");closeCam();toast("IMPACT ENREGISTRÉ !");return}if(mode==="plate"){let b=await snap(850,.62);closeCam();toast("PHOTO PLAQUE PRISE !")}}
+function startQr(){if(!("BarcodeDetector" in window)){alert("Scanner QR natif indisponible. Utilise la saisie secours.");return}const det=new BarcodeDetector({formats:["qr_code"]});const scan=async()=>{if(mode!=="qr"||!$("cameraOverlay").classList.contains("show"))return;try{let codes=await det.detect($("video"));if(codes.length){$("beacon").value=clean(codes[0].rawValue);closeCam();toast("BALISE SCANNÉE !","beep","s4");return}}catch(e){}qrLoop=setTimeout(scan,150)};scan()}
+$("plate").addEventListener("input",()=>{$("platePreview").textContent=normalizePlate($("plate").value)||"AA-123-BB"});
+$("plateBtn").onclick=()=>{let p=normalizePlate($("plate").value);if(!p){alert("Plaque manquante");return}$("plate").value=p;$("platePreview").textContent=p;toast("PLAQUE VALIDÉE !","mini","s2")};
+$("photoBtn").onclick=()=>openCam("impact");$("addImpactBox").onclick=()=>openCam("impact");$("moreBtn").onclick=()=>openCam("impact");
+$("impactNext").onclick=()=>{if(!photos.length){alert("Ajoute au moins une photo");return}toast("IMPACT ENREGISTRÉ !","mini","s3")};
+$("beaconBtn").onclick=()=>{let b=clean($("beacon").value);if(!b){alert("Balise manquante");return}$("beacon").value=b;toast("BALISE SCANNÉE !","beep","s4")};
+$("closeCam").onclick=closeCam;$("captureBtn").onclick=capture;
+$("manualQrBtn").onclick=()=>{$("beacon").value=clean($("manualQrInput").value);$("manualQrInput").value="";closeCam();toast("BALISE SCANNÉE !","beep","s4")};
+$("saveCfg").onclick=()=>{localStorage.setItem("srt_token",$("token").value.trim());localStorage.setItem("srt_chatid",$("chatid").value.trim());toast("RÉGLAGES SAUVÉS !")};
+function confetti(){let colors=["#ff5b00","#08a854","#1238d5","#fff","#ffd166"];for(let i=0;i<45;i++){let c=document.createElement("div");c.className="confetti";c.style.left=Math.random()*100+"vw";c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.animationDelay=Math.random()*240+"ms";document.body.appendChild(c);setTimeout(()=>c.remove(),1700)}}
+async function sendTelegram(){let token=$("token").value.trim(),chat=$("chatid").value.trim(),plate=normalizePlate($("plate").value),beacon=clean($("beacon").value);if(!token||!chat){alert("Token ou Chat ID manquant");return}if(!photos.length){alert("Photo impact manquante");return}let text=`🚗 VÉHICULE SIGNALÉ\n\n🔢 Plaque : ${plate}\n📡 Balise locale : ${beacon}\n📸 Impacts : ${photos.length} photo${photos.length>1?"s":""}\n\n🕒 ${now()}`;for(let i=0;i<photos.length;i++){let fd=new FormData();fd.append("chat_id",chat);fd.append("photo",photos[i],`impact_${i+1}.jpg`);fd.append("caption",i===0?text:`📸 Impact ${i+1}/${photos.length}`);let r=await fetch(`https://api.telegram.org/bot${token}/sendPhoto`,{method:"POST",body:fd});let d=await r.json();if(!d.ok){alert("Erreur Telegram : "+d.description);return}}$("final").classList.add("show");vibrate([90,50,140]);tone("final");confetti();setTimeout(()=>location.reload(),3000)}
+$("sendBtn").onclick=sendTelegram;
+</script>
+</body>
+</html>
